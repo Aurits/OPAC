@@ -27,9 +27,35 @@
     <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="assets/css/main.css">
     <link rel="stylesheet" href="assets/css/custom.css">
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    const cartCountElement = document.getElementById("cart-count");
+
+    // Fetch cart count and update cart number
+    function updateCartCount() {
+        fetch("get-cart-count.php")
+            .then(response => response.text())
+            .then(cartCount => {
+                cartCountElement.textContent = cartCount;
+            })
+            .catch(error => {
+                console.error("Error fetching cart count:", error);
+            });
+    }
+
+    // Initial update
+    updateCartCount();
+
+    // Optionally, you can set up an interval to periodically update the cart count
+    // For example, update every 5 seconds:
+    setInterval(updateCartCount, 5000);
+});
+</script>
 </head>
 
 <body>
+
+
     <header class="header-area header-style-1 header-height-2">
         <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
             <div class="container">
@@ -45,20 +71,47 @@
                         </form>
                     </div>
                         <div class="header-action-right">
+
                             <div class="header-action-2">
-                                <div class="header-action-icon-2">
-                                    <a href="booking.php">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <circle cx="9" cy="21" r="1" />
-                                            <circle cx="20" cy="21" r="1" />
-                                            <path d="M1 1h4l2.1 10.6a2 2 0 002 1.6h11" />
-                                        </svg>
+    <div class="header-action-icon-2">
+        <a href="booking.php">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="9" cy="21" r="1" />
+                <circle cx="20" cy="21" r="1" />
+                <path d="M1 1h4l2.1 10.6a2 2 0 002 1.6h11" />
+            </svg>
+            <?php
+            echo '<span class="pro-count blue" id="">
+';
+                            
+                session_start();
+                require_once "config.php";
+
+                if (isset($_SESSION['id'])) {
+                    $userId = $_SESSION['id'];
+
+                    $cartCountQuery = "SELECT COUNT(*) AS cart_count FROM Reservation WHERE UserID = ?";
+                    $stmt = $link->prepare($cartCountQuery);
+                    $stmt->bind_param("i", $userId);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $row = $result->fetch_assoc();
+                    echo $row['cart_count'];
+                } else {
+                    echo "0";
+                }
+              
+           echo "</span>"; 
+              ?>
+        </a>
+    </div>
+</div>
+
+                           
 
 
-                                        
-                                    </a>
-                                </div>
-                            </div>
+
+                           
                         </div>
                     </div>
                 </div>
@@ -139,6 +192,7 @@
                                         <circle cx="20" cy="21" r="1" />
                                         <path d="M1 1h4l2.1 10.6a2 2 0 002 1.6h11" />
                                     </svg>
+                                     <span class="pro-count blue">2</span>
 
                                    
                                 </a>

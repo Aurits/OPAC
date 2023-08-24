@@ -95,7 +95,7 @@ include('php-assets/header.php');
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label>ISBN</label>
-                                                        <input class="form-control square" name="isbn" type="text">
+                                                        <input class="form-control square" name="isbn[]" type="text">
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label>Keywords</label>
@@ -103,7 +103,7 @@ include('php-assets/header.php');
                                                     </div>
                                                     <div class="form-group col-md-6">
                                                         <label>Format</label>
-                                                        <select class="form-control square" name="format">
+                                                        <select class="form-control square" name="format[]">
                                                             <option value="Print">Print</option>
                                                             <option value="Digital">Digital</option>
                                                             <option value="Audio">Audio</option>
@@ -119,7 +119,7 @@ include('php-assets/header.php');
 
                                                     <div class="form-group col-md-6">
                                                         <label>Location</label>
-                                                        <select class="form-control square" name="location_id">
+                                                        <select class="form-control square" name="location_id[]">
                                                             <?php
 
                                                             include('php-assets/config.php');
@@ -148,6 +148,17 @@ include('php-assets/header.php');
                                                         <label>Description</label>
                                                         <textarea class="form-control square" name="description" rows="6"></textarea>
                                                     </div>
+
+
+                                                    <div class="form-group col-md-12">
+                                                        <label>ISBNs, Formats, and Locations</label>
+                                                        <div id="dynamic-fields-container">
+                                                            <!-- Dynamic fields will be added here -->
+                                                        </div>
+                                                        <button type="button" id="add-dynamic-fields" class="btn btn-sm btn-secondary">Add More ISBNs, Formats, Locations</button>
+                                                    </div>
+
+
                                                     <div class="col-md-12">
                                                         <button type="submit" class="btn btn-fill-out submit" name="add_resource" value="Submit">Save</button>
                                                     </div>
@@ -156,6 +167,8 @@ include('php-assets/header.php');
                                         </div>
                                     </div>
                                 </div>
+
+
 
 
                                 <div class="tab-pane fade" id="categories" role="tabpanel" aria-labelledby="categories-tab">
@@ -346,6 +359,53 @@ include('php-assets/header.php');
 <?php
 include('php-assets/footer.php');
 ?>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const dynamicFieldsContainer = document.getElementById("dynamic-fields-container");
+        const addButton = document.getElementById("add-dynamic-fields");
+
+        let counter = 1;
+
+        addButton.addEventListener("click", function() {
+            const dynamicFields = `
+            <div class="dynamic-field">
+                <div class="form-group col-md-6">
+                    <label>ISBN</label>
+                    <input class="form-control square" name="isbn[${counter}]" type="text">
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Format</label>
+                    
+                    <select class="form-control square" name="format[${counter}]" >
+                        <option value="Print">Print</option>
+                        <option value="Digital">Digital</option>
+                        <option value="Audio">Audio</option>
+                    </select>
+                </div>
+                <div class="form-group col-md-6">
+                    <label>Location</label>
+                    <select class="form-control square" name="location_id[${counter}]">
+                        <?php
+
+                        include('php-assets/config.php');
+                        $location_query = "SELECT LocationID, LocationName FROM Location";
+                        $location_result = mysqli_query($link, $location_query);
+                        while ($row = mysqli_fetch_assoc($location_result)) {
+                            echo "<option value='{$row['LocationID']}'>{$row['LocationName']}</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+            <hr>
+        `;
+
+            dynamicFieldsContainer.insertAdjacentHTML("beforeend", dynamicFields);
+            counter++;
+        });
+    });
+</script>
 
 <!-- Vendor JS-->
 <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>

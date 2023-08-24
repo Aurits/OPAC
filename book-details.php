@@ -52,7 +52,15 @@ if ($categoryResult->num_rows > 0) {
 ?>
 
 
+<?php
 
+
+# If user is not logged in then redirect him to login page
+if (!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== TRUE) {
+    echo "<script>" . "window.location.href='./login.php';" . "</script>";
+    exit;
+}
+?>
 
 
 
@@ -117,7 +125,8 @@ if ($categoryResult->num_rows > 0) {
                                     </div>
                                     <div class="bt-1 border-color-1 mt-15 mb-15"></div>
                                     <div class="short-desc mb-30">
-                                        <p><?php echo $description; ?></p>
+                                        <p><?php echo implode(' ', array_slice(explode(' ', $description), 0, 50)); ?></p>
+
                                     </div>
                                     <div class="product_sort_info font-xs mb-30">
                                         <ul>
@@ -128,6 +137,7 @@ if ($categoryResult->num_rows > 0) {
                                         <div class="">
                                             <a href="reserve-book.php?book_id=<?php echo $bookId; ?>" class="button button-add-to-cart">Reserve</a>
                                         </div>
+
                                     </div>
                                     <div class="bt-1 border-color-1 mt-30 mb-30"></div>
 

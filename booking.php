@@ -36,32 +36,51 @@ include('php-assets/header.php');
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td class="image product-thumbnail"><img src="assets/imgs/book.png" alt="#"></td>
-                                    <td class="product-des product-name">
-                                        <h5 class="product-name"><a href="book-details.php">J.Crew Mercantile
-                                                Women's Short-Sleeve</a></h5>
+                                <?php
+                                // Include your config file
+                                require_once "php-assets/config.php";
 
-                                    </td>
-                                    <td class="price" data-title="Price">
-                                        <p class="font-xs">Maboriosam in a
-                                        </p>
-                                    </td>
-                                    <td class="text-center">
-                                        <p class="font-xs">2000
-                                        </p>
-                                    </td>
-                                    <td class="">
-                                        <p class="font-xs">Maboriosam in a tonto nesciung eget<br> distingy
-                                            magndapibus.
-                                        </p>
-                                    </td>
-                                    <td class="action" data-title="Remove"><a href="#" class="text-muted"><i class="fi-rs-trash"></i></a></td>
-                                </tr>
+                                $userId = $_SESSION['id']; // You need to have the user's ID from the session
+                                $cartQuery = "SELECT r.*, l.LocationName
+                      FROM Reservation AS c
+                      JOIN Resource AS r ON c.ResourceID = r.ResourceID
+                      JOIN Location AS l ON r.LocationID = l.LocationID
+                      WHERE c.UserID = $userId";
+                                $cartResult = $link->query($cartQuery);
 
-                                </tr>
+                                while ($cartItem = $cartResult->fetch_assoc()) {
+                                ?>
+                                    <tr>
+                                        <td class="image product-thumbnail"><img width="30px" src="assets/imgs/book.png" alt="#"></td>
+                                        <td class="product-des product-name">
+                                            <h5 class="product-name"><a href="book-details.php"><?php echo $cartItem['Title']; ?></a></h5>
+                                        </td>
+                                        <td class="price" data-title="Price">
+                                            <p class="font-xs"><?php echo $cartItem['Authors']; ?></p>
+                                        </td>
+                                        <td class="text-center">
+                                            <p class="font-xs"><?php echo $cartItem['PublicationYear']; ?></p>
+                                        </td>
+                                        <td class="">
+                                            <p class="font-xs"><?php echo $cartItem['LocationName']; ?></p>
+                                        </td>
+                                        <td class="action" data-title="Remove">
+                                            <form method="post" action="delete-reserve.php">
+                                                <input type="hidden" name="resource_id" value="<?php echo $cartItem['ResourceID']; ?>">
+                                                <button type="submit" class="remove-from-cart-btn" onclick="return confirm('Are you sure you want to remove this item?');">
+                                                    <i class="fi-rs-trash"></i> Remove
+                                                </button>
+                                            </form>
+                                        </td>
+
+
+                                    </tr>
+                                <?php
+                                }
+                                ?>
                             </tbody>
                         </table>
+
                     </div>
                     <div class="cart-action text-end">
                         <a class="btn  mr-10 mb-sm-15"><i class="fi-rs-shuffle mr-10"></i>Update</a>
@@ -78,6 +97,42 @@ include('php-assets/header.php');
 <?php
 include('php-assets/footer.php');
 ?>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const removeButtons = document.querySelectorAll(".remove-from-cart-btn");
+
+        removeButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const resourceId = button.getAttribute("data-resource-id");
+                removeFromCart(resourceId);
+            });
+        });
+
+        function removeFromCart(resourceId) {
+            // Perform AJAX request to remove the item from the cart
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "php-assets/remove-from-cart.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        // Reload the page after successful removal
+                        location.reload();
+                    } else {
+                        // Handle error
+                        console.error("Error removing item from cart");
+                    }
+                }
+            };
+
+            // Send the resource ID to the server
+            xhr.send("resource_id=" + encodeURIComponent(resourceId));
+        }
+    });
+</script>
+
 <!-- Vendor JS-->
 <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
 <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>
