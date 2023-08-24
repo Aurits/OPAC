@@ -20,4 +20,3 @@ if (isset($_POST["resource_id"])) {
 
     $stmt->close();
 }
-?>

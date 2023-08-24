@@ -54,12 +54,12 @@ ob_start(); // Start output buffering
               JOIN Resource AS r ON c.ResourceID = r.ResourceID
               JOIN Location AS l ON r.LocationID = l.LocationID
               WHERE c.UserID = $userId";
-        
+
         // Execute the query
         $cartResult = $link->query($cartQuery);
 
         while ($cartItem = $cartResult->fetch_assoc()) {
-            ?>
+        ?>
             <tr>
                 <td><?php echo $cartItem['Title']; ?></td>
                 <td><?php echo $cartItem['Authors']; ?></td>
