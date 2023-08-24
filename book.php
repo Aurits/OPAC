@@ -75,6 +75,80 @@ include('php-assets/header.php');
 
                         </div>
                     </div>
+
+
+<?php
+if (isset($_SESSION['role']) && $_SESSION['role'] == 1) {
+    // User has role 1, show the table
+    ?>
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <p class="text-muted font-14 mb-3">
+                        Admin Add
+                    </p>
+
+
+
+
+                    <table id="datatable-buttons" class="table table-striped table-bordered dt-responsive nowrap">
+    <thead>
+        <!-- ... your table header ... -->
+    </thead>
+    <tbody>
+        <?php
+        require_once "php-assets/config.php";
+
+        // Query to get resources with related details
+        $resourceQuery = "SELECT r.ResourceID, r.Title, r.Authors, r.PublicationYear, r.Publisher, r.ISBN, r.Description,
+                l.LocationName, c.CategoryName, r.AvailabilityStatus
+            FROM Resource AS r
+            LEFT JOIN Location AS l ON r.LocationID = l.LocationID
+            LEFT JOIN Category AS c ON r.CategoryID = c.CategoryID";
+        $result = mysqli_query($link, $resourceQuery);
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo "<tr>";
+            echo '<td><a href="book-details.php?resource_id=' . $row['ResourceID'] . '">';
+            echo '<img width="30px" class="default-img" src="assets/imgs/book.png" alt=""></a></td>';
+            echo "<td>{$row['Title']}</td>";
+            echo "<td>{$row['Authors']}</td>";
+            echo "<td>{$row['PublicationYear']}</td>";
+            echo "<td>{$row['Publisher']}</td>";
+            echo "<td>{$row['ISBN']}</td>";
+            echo "<td>{$row['AvailabilityStatus']}</td>";
+            echo "<td>";
+            
+            // Only display the button if the availability status is 'Unavailable'
+            if ($row['AvailabilityStatus'] == 'Unavailable') {
+                echo '<form method="post" action="update-availability.php">';
+                echo '<input type="hidden" name="resource_id" value="' . $row['ResourceID'] . '">';
+                echo '<button type="submit" class="update-availability-btn" onclick="confirmUpdate(this);">Return</button>';
+                echo '</form>';
+            }
+            
+            echo "</td>";
+            echo "</tr>";
+        }
+        ?>
+    </tbody>
+</table>
+
+
+
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php
+}
+?>
+
+<!-- Continue with the rest of your HTML content -->
+
                     <!-- end row -->
                 </div>
                 <div class="col-lg-3 primary-sidebar sticky-sidebar">
@@ -114,6 +188,18 @@ include('php-assets/header.php');
 <?php
 include('php-assets/footer.php');
 ?>
+
+
+<script>
+function confirmUpdate(formElement) {
+    if (confirm("Are you sure you want to mark this resource as available?")) {
+        formElement.submit();
+    }
+}
+</script>
+
+
+
 <!-- Vendor JS-->
 <script src="assets/js/vendor/modernizr-3.6.0.min.js"></script>
 <script src="assets/js/vendor/jquery-3.6.0.min.js"></script>

@@ -19,9 +19,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST" && isset($_POST["resource_id"])) {
         $removeStmt->bind_param("ii", $userId, $resourceId);
 
         if ($removeStmt->execute()) {
-            echo "Success <a href='book.php'></a>";
+            echo "Success <a href='book.php'>Back</a>";
         } else {
-            echo "Error removing item <a href='book.php'></a>";
+            echo "Error removing item <a href='book.php'>Back</a>";
         }
 
         $removeStmt->close();
